@@ -15,12 +15,20 @@ namespace TerceraPracticaWEBAPIConfiguration
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IConfiguration configuration { get; }
+        public Startup(IHostEnvironment env)// le inyectamos el ambiente en el que estamos
         {
-            Configuration = configuration;
-        }
+            // Agregamos las variables de entorno especificas dependiendo
+            // de la configuracion en la que nos encontremos (IHostEnvironment env)
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json")
+                .AddEnvironmentVariables();
 
-        public IConfiguration Configuration { get; }
+            // se lo asignamos a nuestra configuracion global
+            configuration = builder.Build();
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
